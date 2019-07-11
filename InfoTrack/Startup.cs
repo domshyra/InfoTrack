@@ -21,11 +21,6 @@ namespace InfoTrack
                     reloadOnChange: true)
                 .AddEnvironmentVariables();
 
-            if (env.IsDevelopment())
-            {
-                builder.AddUserSecrets<Startup>();
-            }
-
             Configuration = builder.Build();
         }
 

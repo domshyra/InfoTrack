@@ -19,19 +19,20 @@ namespace InfoTrack.Providers
             Search search = new Search()
             {
                 MaxSearchResults = maxResults,
-                SearchKeyword = keyword,
-                SearchURL = url
+                SearchKeyword = keyword.Trim(),
+                SearchURL = url.Trim(),
+                SearchResultCards = GetSearchResultCards(maxResults, keyword.Trim(), url.Trim())
             };
 
 
             return search;
         }
 
-        public List<SearchResultCard> GetSearchResultCards(Search search)
+        public List<SearchResultCard> GetSearchResultCards(int maxResults, string keyword, string url)
         {
             List<SearchResultCard> cards = new List<SearchResultCard>();
 
-            string searchURL = $"{_googleURL}num={search.MaxSearchResults}&q={search.SearchKeyword.Replace(' ', '+')}";
+            string searchURL = $"{_googleURL}num={maxResults}&q={keyword.Replace(' ', '+')}";
 
             WebClient webClient = new WebClient();
             string downloadStr = webClient.DownloadString(searchURL);

@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using InfoTrack.Interfaces;
 using InfoTrack.Models;
+using InfoTrack.Assemblers;
 
 namespace InfoTrack.Providers
 {
@@ -30,19 +28,21 @@ namespace InfoTrack.Providers
 
         public List<SearchResultCard> GetSearchResultCards(int maxResults, string keyword, string url)
         {
-            List<SearchResultCard> cards = new List<SearchResultCard>();
-
             string searchURL = $"{_googleURL}num={maxResults}&q={keyword.Replace(' ', '+')}";
 
             WebClient webClient = new WebClient();
             string downloadStr = webClient.DownloadString(searchURL);
 
-            foreach (Link item in Find(downloadStr))
+            List<Link> links = Find(downloadStr);
+
+            //remove null links
+            List<Link> nullLinks = links.Where(x => string.IsNullOrEmpty(x.Href)).ToList();
+            foreach (Link nullLink in nullLinks)
             {
-                Debug.WriteLine(item);
+                links.Remove(nullLink);
             }
 
-            return cards;
+            return links.Where(x => x.Href.Contains(url)).MakeSearchResultCards();
         }
 
         public List<Link> Find(string file)
@@ -51,7 +51,6 @@ namespace InfoTrack.Providers
 
             // Find all matches in file.
             MatchCollection matches = Regex.Matches(file, @"(?s)<div[^>]*?class=\""ZINbbc xpd O9g5cc uUPGi\""[^>]*?><div[^>](.*?)</div></div>");
-            //MatchCollection matches = Regex.Matches(file, @"(?s)<div[^>]*?class=\""ZINbbc xpd O9g5cc uUPGi\""[^>]*?>(.*?)</div>"); //grabes title but not links
 
             // Loop over each match.
             foreach (Match match in matches)

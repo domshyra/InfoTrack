@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using InfoTrack.Interfaces;
+﻿using InfoTrack.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InfoTrack.Controllers

@@ -50,30 +50,39 @@ namespace InfoTrack.Providers
             List<Link> list = new List<Link>();
 
             // Find all matches in file.
-            MatchCollection matches = Regex.Matches(file, @"(<a.*?>.*?</a>)",
-                RegexOptions.Singleline);
+            MatchCollection matches = Regex.Matches(file, @"(?s)<div[^>]*?class=\""ZINbbc xpd O9g5cc uUPGi\""[^>]*?><div[^>](.*?)</div></div>");
+            //MatchCollection matches = Regex.Matches(file, @"(?s)<div[^>]*?class=\""ZINbbc xpd O9g5cc uUPGi\""[^>]*?>(.*?)</div>"); //grabes title but not links
 
             // Loop over each match.
             foreach (Match match in matches)
-            {
+            { 
                 string value = match.Groups[1].Value;
                 Link link = new Link();
 
-                // Get href attribute.
-                Match hrefMatch = Regex.Match(value, @"href=\""(.*?)\""",
-                    RegexOptions.Singleline);
+                // Get title attribute
+                Match titleMatch = Regex.Match(value, @"(?s)<div[^>]*?class=\""BNeawe vvjwJb AP7Wnd\""[^>]*?>(.*?)</div>", RegexOptions.Singleline);
+                if (titleMatch.Success)
+                {
+                    link.Title = titleMatch.Groups[1].Value;
+                }
+                // Get href attribute
+                Match hrefMatch = Regex.Match(value, @"(?s)<div[^>]*?class=\""BNeawe UPmit AP7Wnd\""[^>]*?>(.*?)</div>", RegexOptions.Singleline);
                 if (hrefMatch.Success)
                 {
                     link.Href = hrefMatch.Groups[1].Value;
                 }
-
-                // Remove inner tags from text.
-                string text = Regex.Replace(value, @"\s*<.*?>\s*", "",
-                    RegexOptions.Singleline);
-                link.Text = text;
+                //// Get title attribute
+                ////<div class="BNeawe s3v9rd AP7Wnd"><div><div><div class="BNeawe s3v9rd AP7Wnd">
+                //Match descriptionMatch = Regex.Match(value, @"(?s)<div[^>]*?class=\""BNeawe s3v9rd AP7Wnd\""[^>]*?>(.*?)", RegexOptions.Multiline);
+                //if (descriptionMatch.Success)
+                //{
+                //    link.Text = descriptionMatch.Groups[1].Value;
+                //}
 
                 list.Add(link);
             }
+
+
             return list;
         }
     }

@@ -1,4 +1,5 @@
 ﻿using InfoTrack.Interfaces;
+using InfoTrack.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InfoTrack.Controllers
@@ -12,15 +13,10 @@ namespace InfoTrack.Controllers
             _searchProvider = searchProvider;
         }
 
-        public IActionResult Index()
+        public IActionResult Search(Search model)
         {
-            _searchProvider.GetSearchResults(100, "online title search", "www.infotrack.com.au");
-            return View();
-        }
-
-        public string UpdateSearch(int maxResults, string keyword, string url)
-        {
-            return "";
+            model = _searchProvider.GetSearchResults(model.MaxSearchResults, model.SearchKeyword, model.SearchURL);
+            return View("Search", model);
         }
     }
 }

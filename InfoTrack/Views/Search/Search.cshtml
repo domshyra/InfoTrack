@@ -1,0 +1,63 @@
+﻿@using InfoTrack.Models
+@model Search
+@{
+    ViewData["Title"] = "Search";
+}
+<script src="~/js/bootstrap-validation.js"></script>
+
+<div class="col-md-12 mt-2">
+    <div class="card">
+        <div class="card-header">
+            <form asp-action="Search" enctype="multipart/form-data" method="post" class="form-horizontal needs-validation" novalidate>
+                <div class="form-row">
+                    <div class="form-group col-4">
+                        <label asp-for="MaxSearchResults"></label>
+                        <input asp-for="MaxSearchResults" class="form-control" type="number" required/>
+                        <div class="invalid-feedback">
+                            @Html.DisplayNameFor(model => model.MaxSearchResults) is required.
+                        </div>
+                    </div>
+                    <div class="form-group col-4">
+                        <label asp-for="SearchKeyword"></label>
+                        <input asp-for="SearchKeyword" class="form-control" maxlength="250" required/>
+                        <div class="invalid-feedback">
+                            @Html.DisplayNameFor(model => model.SearchKeyword) is required.
+                        </div>
+                    </div>
+                    <div class="form-group col-4">
+                        <label asp-for="SearchURL"></label>
+                        <input asp-for="SearchURL" class="form-control" maxlength="250" required/>
+                        <div class="invalid-feedback">
+                            @Html.DisplayNameFor(model => model.SearchURL) is required.
+                        </div>
+                    </div>
+                </div>
+                <p>
+                    <small class="card-text">This will search <a href="https://www.google.com.au">https://www.google.com.au</a></small>
+                </p>
+                <button class="btn btn-primary" type="submit" id="SubmitForm">Update search</button>
+                <button style="display:none;" id="form-working-message" class="btn btn-primary" disabled><i class="fas fa-spinner glyphicon-spin"></i> Loading...</button>
+            </form>
+        </div>
+        <div class="card-body">
+            <h5 class="border-bottom pb-2">Results</h5>
+            <p class="text-muted">@Model.SearchResultCards.Count() matches for @Model.SearchURL</p>
+            <div class="row">
+                @foreach (SearchResultCard card in Model.SearchResultCards)
+                {
+                    <div class="col-6">
+                        <div class="card">
+                            <div class="card-header font-weight-bold">
+                                <a href="@card.TitleLink">@card.Title</a>
+                            </div>
+                            <div class="card-body">
+                                <p>@Html.Raw(card.CardBodyText)</p>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+</div>

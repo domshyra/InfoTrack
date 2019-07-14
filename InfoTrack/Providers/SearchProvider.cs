@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using InfoTrack.Interfaces;
 using InfoTrack.Models;
 using InfoTrack.Assemblers;
+using System.Diagnostics;
 
 namespace InfoTrack.Providers
 {
@@ -31,18 +32,33 @@ namespace InfoTrack.Providers
             string searchURL = $"{_googleURL}num={maxResults}&q={keyword.Replace(' ', '+')}";
 
             WebClient webClient = new WebClient();
-            string downloadStr = webClient.DownloadString(searchURL);
-
-            List<Link> links = Find(downloadStr);
-
-            //remove null links
-            List<Link> nullLinks = links.Where(x => string.IsNullOrEmpty(x.Href)).ToList();
-            foreach (Link nullLink in nullLinks)
+            try
             {
-                links.Remove(nullLink);
+                //prevent too many requests
+                System.Threading.Thread.Sleep(5000);
+
+                string downloadStr = webClient.DownloadString(searchURL);
+
+                List<Link> links = Find(downloadStr);
+
+                //remove null links
+                List<Link> nullLinks = links.Where(x => string.IsNullOrEmpty(x.Href)).ToList();
+                foreach (Link nullLink in nullLinks)
+                {
+                    links.Remove(nullLink);
+                }
+
+                List<Link> matchedURLs = links.Where(x => x.Href.Contains(url)).ToList();
+
+                return matchedURLs.MakeSearchResultCards();
+            }
+            catch (WebException e)
+            {
+                Debug.WriteLine(e.Status);
             }
 
-            return links.Where(x => x.Href.Contains(url)).MakeSearchResultCards();
+            return new List<SearchResultCard>();
+            
         }
 
         public List<Link> Find(string file)
@@ -70,13 +86,13 @@ namespace InfoTrack.Providers
                 {
                     link.Href = hrefMatch.Groups[1].Value;
                 }
-                //// Get title attribute
-                ////<div class="BNeawe s3v9rd AP7Wnd"><div><div><div class="BNeawe s3v9rd AP7Wnd">
-                //Match descriptionMatch = Regex.Match(value, @"(?s)<div[^>]*?class=\""BNeawe s3v9rd AP7Wnd\""[^>]*?>(.*?)", RegexOptions.Multiline);
-                //if (descriptionMatch.Success)
-                //{
-                //    link.Text = descriptionMatch.Groups[1].Value;
-                //}
+                // Get text attribute
+                //<div class="BNeawe s3v9rd AP7Wnd"><div><div><div class="BNeawe s3v9rd AP7Wnd">
+                Match descriptionMatch = Regex.Match(value, @"(?s)<div[^>]*?class=\""BNeawe s3v9rd AP7Wnd\""[^>]*?><div[^>]*?[^>]*?><div[^>]*?[^>]*?><div[^>]*?class=\""BNeawe s3v9rd AP7Wnd\""[^>]*?>(.*?)(.*)", RegexOptions.Multiline);
+                if (descriptionMatch.Success)
+                {
+                    link.Text = descriptionMatch.Groups[2].Value;
+                }
 
                 list.Add(link);
             }

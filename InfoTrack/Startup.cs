@@ -65,7 +65,7 @@ namespace InfoTrack
             {
                 routes.MapRoute(
                     name: "default",
-                    template: "{controller=Search}/{action=Index}/{id?}");
+                    template: "{controller=Search}/{action=Search}/{id?}");
             });
         }
     }

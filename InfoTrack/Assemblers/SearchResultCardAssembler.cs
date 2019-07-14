@@ -12,7 +12,8 @@ namespace InfoTrack.Assemblers
             return new SearchResultCard
             {
                 Title = source.Title,
-                TitleLink = source.Href
+                TitleLink = source.Href,
+                CardBodyText = source.Text
             };
         }
 
